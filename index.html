@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redirigiendo…</title>
+  <style>
+    body { font-family: sans-serif; display: flex; align-items: center;
+           justify-content: center; height: 100vh; margin: 0; color: #333; }
+  </style>
+</head>
+<body>
+  <p id="msg">Redirigiendo…</p>
+  <script>
+    const API = 'https://script.google.com/macros/s/AKfycbz-pmrCrv317Hu8GKIlbG_gd7-tVzY4mqYMR4a5NgMYsqyRkH-aRVKUw9nweQ0kx4yPbw/exec';
+    const msg = document.getElementById('msg');
+    const id = new URLSearchParams(location.search).get('id');
+
+    if (!id) {
+      msg.textContent = 'Código no válido.';
+    } else {
+      fetch(API + '?id=' + encodeURIComponent(id))
+        .then(r => r.json())
+        .then(d => {
+          if (d.ok && /^https?:\/\//i.test(d.url)) location.replace(d.url);
+          else msg.textContent = 'Este código no está disponible.';
+        })
+        .catch(() => msg.textContent = 'Error de conexión. Intenta de nuevo.');
+    }
+  </script>
+</body>
+</html>
