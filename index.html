@@ -3,29 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Redirigiendo…</title>
+  <title>Hola Mi Tag</title>
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://script.googleusercontent.com">
   <style>
-    body { font-family: sans-serif; display: flex; align-items: center;
-           justify-content: center; height: 100vh; margin: 0; color: #333; }
+    html, body { height: 100%; margin: 0; background: #fff;
+                 font-family: sans-serif; color: #333; }
+    body { display: flex; flex-direction: column; align-items: center;
+           justify-content: center; }
+    #spin { width: 32px; height: 32px; border: 4px solid #ddd;
+            border-top-color: #555; border-radius: 50%;
+            animation: g .8s linear infinite; opacity: 0;
+            transition: opacity .3s; }
+    #spin.show { opacity: 1; }
+    @keyframes g { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-  <p id="msg">Redirigiendo…</p>
+  <div id="spin"></div>
+  <p id="msg"></p>
   <script>
     const API = 'https://script.google.com/macros/s/AKfycbz-pmrCrv317Hu8GKIlbG_gd7-tVzY4mqYMR4a5NgMYsqyRkH-aRVKUw9nweQ0kx4yPbw/exec';
     const msg = document.getElementById('msg');
+    const spin = document.getElementById('spin');
     const id = new URLSearchParams(location.search).get('id');
 
+    setTimeout(() => spin.classList.add('show'), 700);
+
+    function fallo(texto) {
+      spin.style.display = 'none';
+      msg.textContent = texto;
+    }
+
     if (!id) {
-      msg.textContent = 'Código no válido.';
+      fallo('Código no válido.');
     } else {
       fetch(API + '?id=' + encodeURIComponent(id))
         .then(r => r.json())
         .then(d => {
           if (d.ok && /^https?:\/\//i.test(d.url)) location.replace(d.url);
-          else msg.textContent = 'Este código no está disponible.';
+          else fallo('Este código no está disponible.');
         })
-        .catch(() => msg.textContent = 'Error de conexión. Intenta de nuevo.');
+        .catch(() => fallo('Error de conexión. Intenta de nuevo.'));
     }
   </script>
 </body>
